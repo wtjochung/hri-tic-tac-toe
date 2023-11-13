@@ -76,7 +76,7 @@ function newGame(depth = -1, startingPlayer = 1) {
                     currRound += 1;
                 }
                 playerTurn = 1; //Switch turns
-            }, true); // TODO: implement var for cheat functionality based on test scenerio
+            }, true); 
         }, false);
         if(cell) addClass(htmlCells[index], cell);
     });
