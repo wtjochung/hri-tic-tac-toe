@@ -2,6 +2,15 @@ import Board from './classes/board.js';
 import Player from './classes/player.js';
 import { drawWinningLine, hasClass, addClass } from './helpers.js';
 
+let totalNumRounds = 5;
+let currRound = 1;
+// sub-arrays are the scenarios, 1 = cheat, 0 = don't cheat
+let cheatPattern = [
+    [0, 0, 0, 0, 0], 
+    [0, 0, 1, 0, 0],
+    [0, 1, 0, 1, 0]
+    ];
+
 //Starts a new game with a certain depth and a startingPlayer of 1 if human is going to start
 function newGame(depth = -1, startingPlayer = 1) {
     const experiment_configuration = parseInt(test_scenerio);
@@ -59,6 +68,12 @@ function newGame(depth = -1, startingPlayer = 1) {
                 addClass(htmlCells[best.move], symbol);
                 if(board.isTerminal()) {
                     drawWinningLine(board.isTerminal());
+                    if (cheatPattern[experiment_configuration][currRound] == 1) {
+                        // Call Misty cheat code
+                    } else {
+                        // Call Misty normal code
+                    }
+                    currRound += 1;
                 }
                 playerTurn = 1; //Switch turns
             }, true); // TODO: implement var for cheat functionality based on test scenerio
@@ -68,16 +83,23 @@ function newGame(depth = -1, startingPlayer = 1) {
 }
 
 document.addEventListener("DOMContentLoaded", () => { 
+
+    const ip = "10.5.6.13";
+
 	//Start a new game when page loads with default values
 	const depth = -1;
 	const startingPlayer = 1;
-    newGame(depth, startingPlayer);
+    while (currRound < totalNumRounds){
+        newGame(depth, startingPlayer);
+    }
+    
+    
     //Start a new game with chosen options when new game button is clicked
-	document.getElementById("newGame").addEventListener('click', () => {
-		const startingDIV = document.getElementById("starting");
-		const starting = startingDIV.options[startingDIV.selectedIndex].value;
-		const depthDIV = document.getElementById("depth");
-        const depth = depthDIV.options[depthDIV.selectedIndex].value;
-		newGame(depth, starting);
-	});
+	// document.getElementById("newGame").addEventListener('click', () => {
+	// 	const startingDIV = document.getElementById("starting");
+	// 	const starting = startingDIV.options[startingDIV.selectedIndex].value;
+	// 	const depthDIV = document.getElementById("depth");
+    //     const depth = depthDIV.options[depthDIV.selectedIndex].value;
+	// 	newGame(depth, starting);
+	// });
 });
