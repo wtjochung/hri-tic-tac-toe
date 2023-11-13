@@ -69,8 +69,10 @@ function newGame(depth = -1, startingPlayer = 1) {
                 if(board.isTerminal()) {
                     drawWinningLine(board.isTerminal());
                     if (cheatPattern[experiment_configuration][currRound] == 1) {
+                        console.log(`Misty will cheat for scenario ${experiment_configuration} round ${currRound}`);
                         // Call Misty cheat code
                     } else {
+                        console.log(`Misty will NOT cheat for scenario ${experiment_configuration} round ${currRound}`);
                         // Call Misty normal code
                     }
                     currRound += 1;
@@ -90,9 +92,9 @@ document.addEventListener("DOMContentLoaded", () => {
 	const depth = -1;
 	const startingPlayer = 1;
     while (currRound < totalNumRounds){
+        console.log(`Starting round ${currRound}`);
         newGame(depth, startingPlayer);
     }
-    
     
     //Start a new game with chosen options when new game button is clicked
 	// document.getElementById("newGame").addEventListener('click', () => {
