@@ -2,18 +2,29 @@ import Board from './classes/board.js';
 import Player from './classes/player.js';
 import { drawWinningLine, hasClass, addClass } from './helpers.js';
 
-let totalNumRounds = 5;
-let currRound = 1;
+/* 
+ * TODO: debug why experiment_configuration isn't working
+ *       connect to Misty 
+ *       auto switch to next round? Async await?
+ */
+
+var ip = "10.5.6.13";
+var totalNumRounds = 5;
+var currRound = 1;
 // sub-arrays are the scenarios, 1 = cheat, 0 = don't cheat
-let cheatPattern = [
+var cheatPattern = [
     [0, 0, 0, 0, 0], 
     [0, 0, 1, 0, 0],
     [0, 1, 0, 1, 0]
     ];
+var wins = [0, 0, 0, 0, 0]
 
 //Starts a new game with a certain depth and a startingPlayer of 1 if human is going to start
 function newGame(depth = -1, startingPlayer = 1) {
     const experiment_configuration = parseInt(test_scenerio);
+    //TODO: debug why this isn't working
+    
+
 	//Instantiating a new player and an empty board
 	const player = new Player(parseInt(depth));
 	const board = new Board(['','','','','','','','','']);
@@ -68,14 +79,15 @@ function newGame(depth = -1, startingPlayer = 1) {
                 addClass(htmlCells[best.move], symbol);
                 if(board.isTerminal()) {
                     drawWinningLine(board.isTerminal());
-                    if (cheatPattern[experiment_configuration][currRound] == 1) {
+                    //TODO: replace first index with actual experimental configuration
+                    if ((currRound <= totalNumRounds) && (cheatPattern[1][currRound-1] == 1)) {
                         console.log(`Misty will cheat for scenario ${experiment_configuration} round ${currRound}`);
                         // Call Misty cheat code
                     } else {
                         console.log(`Misty will NOT cheat for scenario ${experiment_configuration} round ${currRound}`);
                         // Call Misty normal code
                     }
-                    currRound += 1;
+                    //currRound += 1;
                 }
                 playerTurn = 1; //Switch turns
             }, true); 
@@ -86,22 +98,23 @@ function newGame(depth = -1, startingPlayer = 1) {
 
 document.addEventListener("DOMContentLoaded", () => { 
 
-    const ip = "10.5.6.13";
-
 	//Start a new game when page loads with default values
 	const depth = -1;
 	const startingPlayer = 1;
-    while (currRound < totalNumRounds){
-        console.log(`Starting round ${currRound}`);
-        newGame(depth, startingPlayer);
-    }
+    //while (currRound <= totalNumRounds){
+    console.log(`Starting round ${currRound}`);
+    newGame(depth, startingPlayer);
+    currRound += 1;
+    //}
     
     //Start a new game with chosen options when new game button is clicked
-	// document.getElementById("newGame").addEventListener('click', () => {
-	// 	const startingDIV = document.getElementById("starting");
-	// 	const starting = startingDIV.options[startingDIV.selectedIndex].value;
-	// 	const depthDIV = document.getElementById("depth");
-    //     const depth = depthDIV.options[depthDIV.selectedIndex].value;
-	// 	newGame(depth, starting);
-	// });
+	document.getElementById("newGame").addEventListener('click', () => {
+		const startingDIV = document.getElementById("starting");
+		const starting = startingDIV.options[startingDIV.selectedIndex].value;
+		const depthDIV = document.getElementById("depth");
+        const depth = depthDIV.options[depthDIV.selectedIndex].value;
+        console.log(`Starting round ${currRound}`);
+        newGame(depth, starting);
+        currRound += 1;
+	});
 });
