@@ -70,10 +70,10 @@ function newGame(depth = -1, startingPlayer = 1, test_scenario = 1) {
             //If it's a terminal move and it's not a draw, then human won
             if(board.isTerminal()) {
                 drawWinningLine(board.isTerminal());
+                //TODO: Misty shows sad face because the human won
             }
             playerTurn = 0; //Switch turns
             //Get computer's best move and update the UI
-            //TODO: replace first index with actual experimental configuration
             var currRoundCheat = cheatPattern[experiment_configuration-1][Math.min(currRound-1,totalNumRounds)];
             if (currRoundCheat == 1) {
                 console.log(`Misty WILL cheat for scenario ${experiment_configuration} round ${currRound}`);
@@ -87,6 +87,19 @@ function newGame(depth = -1, startingPlayer = 1, test_scenario = 1) {
                 addClass(htmlCells[best.move], symbol);
                 if(board.isTerminal()) {
                     drawWinningLine(board.isTerminal());
+                    //TODO: Misty shows sad face because the human won
+                    const { winner, direction, row, column, diagonal } = statusObject;
+                    if (winner == 'draw') {
+                        //TODO: Misty shows draw face
+                    } else {
+
+                        //If Misty won by cheating
+                        if (currRoundCheat == 1) {
+                            //TODO: Misty shows cheating face
+                        } else {
+                            //TODO: Misty shows non-cheating celebratory face
+                        }
+                    }
                 }
                 playerTurn = 1; //Switch turns
             }, (currRoundCheat == 1)); //last var: whether the robot will cheat
