@@ -10,7 +10,7 @@ import { drawWinningLine, hasClass, addClass } from './helpers.js';
 
 var ip = "10.5.6.13";
 var totalNumRounds = 5;
-var currRound = 1;
+var currRound = 0;
 // sub-arrays are the scenarios, 1 = cheat, 0 = don't cheat
 var cheatPattern = [
     [0, 0, 0, 0, 0], 
@@ -20,10 +20,9 @@ var cheatPattern = [
 var wins = [0, 0, 0, 0, 0]
 
 //Starts a new game with a certain depth and a startingPlayer of 1 if human is going to start
-function newGame(depth = -1, startingPlayer = 1, test_scenario = 1) {
+function newGame(depth = -1, startingPlayer = 1, test_scenario = 1, cheat = 0) {
     const experiment_configuration = parseInt(test_scenario);
-    console.log(`Scenario: ${experiment_configuration}`);
-    //TODO: debug why this isn't working
+    const currRoundCheat = cheat;
 
 	//Instantiating a new player and an empty board
 	const player = new Player(parseInt(depth));
@@ -69,38 +68,46 @@ function newGame(depth = -1, startingPlayer = 1, test_scenario = 1) {
             addClass(htmlCells[index], symbol);
             //If it's a terminal move and it's not a draw, then human won
             if(board.isTerminal()) {
+                const { winner, direction, row, column, diagonal } = board.isTerminal();
+                if (winner == 'draw') {
+                    //TODO: Misty shows draw face
+                    console.log(`Round ${currRound}: a draw`);
+                } else {
+                    //TODO: Misty shows sad face because the human won
+
+                    console.log(`Round ${currRound}: the human wins`);
+                }
                 drawWinningLine(board.isTerminal());
-                //TODO: Misty shows sad face because the human won
             }
             playerTurn = 0; //Switch turns
             //Get computer's best move and update the UI
-            var currRoundCheat = cheatPattern[experiment_configuration-1][Math.min(currRound-1,totalNumRounds)];
-            if (currRoundCheat == 1) {
-                console.log(`Misty WILL cheat for scenario ${experiment_configuration} round ${currRound}`);
-            } else {
-                console.log(`Misty WILL NOT cheat for scenario ${experiment_configuration} round ${currRound}`);
-            }
 
             player.getBestMove(board, !maximizing, best => {
                 let symbol = best.cheatMove ? (!maximizing ? 'o' : 'x') : (!maximizing ? 'x' : 'o');
                 board.insert(symbol, parseInt(best.move));
                 addClass(htmlCells[best.move], symbol);
+
                 if(board.isTerminal()) {
-                    drawWinningLine(board.isTerminal());
                     //TODO: Misty shows sad face because the human won
-                    const { winner, direction, row, column, diagonal } = statusObject;
+
+                    const { winner, direction, row, column, diagonal } = board.isTerminal();
                     if (winner == 'draw') {
                         //TODO: Misty shows draw face
+                        console.log(`Round ${currRound}: a draw`);
                     } else {
 
                         //If Misty won by cheating
                         if (currRoundCheat == 1) {
                             //TODO: Misty shows cheating face
+                            console.log(`Round ${currRound}: Misty wins by cheating`);
                         } else {
                             //TODO: Misty shows non-cheating celebratory face
+                            console.log(`Round ${currRound}: Misty wins without cheating`);
                         }
                     }
+                    drawWinningLine(board.isTerminal());
                 }
+
                 playerTurn = 1; //Switch turns
             }, (currRoundCheat == 1)); //last var: whether the robot will cheat
         }, false);
@@ -114,21 +121,29 @@ document.addEventListener("DOMContentLoaded", () => {
 	const depth = -1;
 	const startingPlayer = 1;
     //while (currRound <= totalNumRounds){
-    console.log(`Starting round ${currRound}`);
-    newGame(depth, startingPlayer);
+    console.log(`Starting game in initial configuration`);
+    newGame(depth, startingPlayer, 1, 0);
     //}
-    
+        
     //Start a new game with chosen options when new game button is clicked
-	document.getElementById("newGame").addEventListener('click', () => {
-		const startingDIV = document.getElementById("starting");
-		const starting = startingDIV.options[startingDIV.selectedIndex].value;
-		const depthDIV = document.getElementById("depth");
+    document.getElementById("newGame").addEventListener('click', () => {
+        const startingDIV = document.getElementById("starting");
+        const starting = startingDIV.options[startingDIV.selectedIndex].value;
+        const depthDIV = document.getElementById("depth");
         const depth = depthDIV.options[depthDIV.selectedIndex].value;
         const scenarioDIV = document.getElementById("test_scenario");
         const scenario = scenarioDIV.options[scenarioDIV.selectedIndex].value;
 
         currRound += 1;
-        console.log(`Starting round ${currRound}`);
-        newGame(depth, starting, scenario);
-	});
+        console.log(`Starting round ${currRound} in scenario ${scenario}`);
+        const cheat = cheatPattern[scenario-1][Math.min(currRound-1, totalNumRounds)];
+            if (cheat == 1) {
+                console.log(`Misty WILL cheat`);
+            } else {
+                console.log(`Misty WILL NOT cheat`);
+            }
+        newGame(depth, starting, scenario, cheat);
+
+    });
+
 });
