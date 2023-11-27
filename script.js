@@ -3,7 +3,7 @@ import Player from './classes/player.js';
 import { drawWinningLine, hasClass, addClass } from './helpers.js';
 
 /* 
- * TODO: debug why experiment_configuration isn't working
+ * TODO: 
  *       connect to Misty 
  *       auto switch to next round? Async await?
  */
@@ -18,6 +18,36 @@ var cheatPattern = [
     [0, 1, 0, 1, 0]
     ];
 var wins = [0, 0, 0, 0, 0]
+
+let exp_joy = {
+    "FileName": "e_Joy2.jpg",
+    "Alpha": 1 //optional
+    //"Layer": null //default layer
+    //"IsUrl": false //if true, script will treat filename as an online url
+};
+
+let LED_color = {
+    "red": 0,
+    "green": 255,
+    "blue": 0
+};
+
+let audio_file = {
+    "FileName": "s_Awe.wav"
+};
+
+function changeExpression(filename) {
+
+    axios.post("http://" + ip + "/api/images/display", filename)
+    .then(function (response) {
+        console.log(`ChangeExpression to ${filename} was a ${response.data.status}`);
+    })
+    .catch(function (error) {
+        console.log(`There was an error with the request ${error}`);
+    })
+}
+
+
 
 //Starts a new game with a certain depth and a startingPlayer of 1 if human is going to start
 function newGame(depth = -1, startingPlayer = 1, test_scenario = 1, cheat = 0) {
@@ -103,6 +133,21 @@ function newGame(depth = -1, startingPlayer = 1, test_scenario = 1, cheat = 0) {
                         } else {
                             //TODO: Misty shows non-cheating celebratory face
                             console.log(`Round ${currRound}: Misty wins without cheating`);
+                            changeExpression(exp_joy);
+                            axios.post("http://" + ip + "/api/led", LED_color);
+
+                            //Make misty speak (currently from browser)
+                            var msg = new SpeechSynthesisUtterance();
+                            msg.text = "Hello World";
+                            window.speechSynthesis.speak(msg);
+                            axios.post("http://" + ip + "/api/audio/play", audio_file)
+                            .then(function (response) {
+                                console.log(`Play Audio ${audio_file} was a ${response.data.status}`);
+                            })
+                            .catch(function (error) {
+                                console.log(`There was an error with the play audio request ${error}`);
+                            })
+
                         }
                     }
                     drawWinningLine(board.isTerminal());
