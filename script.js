@@ -36,6 +36,37 @@ let audio_file = {
     "FileName": "s_Awe.wav"
 };
 
+/* 
+ * Code to convert text to audio
+ *
+ */
+
+const textToSpeech = require('@google-cloud/text-to-speech');
+const fs = require('fs');
+const util = require('util');
+
+const client = new textToSpeech.TextToSpeechClient();
+
+/**
+ * TODO(developer): Uncomment the following lines before running the sample.
+ */
+const text = 'Google text to speech api';
+const outputFile = '/audio/output.mp3';
+
+const request = {
+  input: {text: text},
+  voice: {languageCode: 'en-US', ssmlGender: 'FEMALE'},
+  audioConfig: {audioEncoding: 'MP3'},
+};
+const [response] = await client.synthesizeSpeech(request);
+const writeFile = util.promisify(fs.writeFile);
+await writeFile(outputFile, response.audioContent, 'binary');
+console.log(`Audio content written to file: ${outputFile}`);
+
+
+
+
+
 function changeExpression(filename) {
 
     axios.post("http://" + ip + "/api/images/display", filename)
