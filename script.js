@@ -2,6 +2,8 @@ import Board from './classes/board.js';
 import Player from './classes/player.js';
 import { drawWinningLine, hasClass, addClass } from './helpers.js';
 
+
+
 /* 
  * TODO: 
  *       connect to Misty 
@@ -21,49 +23,14 @@ var wins = [0, 0, 0, 0, 0]
 
 let exp_joy = {
     "FileName": "e_Joy2.jpg",
-    "Alpha": 1 //optional
+    //"Alpha": 1 //optional
     //"Layer": null //default layer
     //"IsUrl": false //if true, script will treat filename as an online url
 };
 
-let LED_color = {
-    "red": 0,
-    "green": 255,
-    "blue": 0
-};
-
-let audio_file = {
-    "FileName": "s_Awe.wav"
-};
-
-/* 
- * Code to convert text to audio
- *
- */
-
-const textToSpeech = require('@google-cloud/text-to-speech');
-const fs = require('fs');
-const util = require('util');
-
-const client = new textToSpeech.TextToSpeechClient();
-
-/**
- * TODO(developer): Uncomment the following lines before running the sample.
- */
-const text = 'Google text to speech api';
-const outputFile = '/audio/output.mp3';
-
-const request = {
-  input: {text: text},
-  voice: {languageCode: 'en-US', ssmlGender: 'FEMALE'},
-  audioConfig: {audioEncoding: 'MP3'},
-};
-const [response] = await client.synthesizeSpeech(request);
-const writeFile = util.promisify(fs.writeFile);
-await writeFile(outputFile, response.audioContent, 'binary');
-console.log(`Audio content written to file: ${outputFile}`);
-
-
+// let exp = {
+//     "FileName": "e_Amazement.jpg"
+// }
 
 
 
@@ -77,6 +44,99 @@ function changeExpression(filename) {
         console.log(`There was an error with the request ${error}`);
     })
 }
+
+console.log(`Tries to connect to Talkify text-to-speech`);
+talkify.config.remoteService.host = 'https://talkify.net';
+talkify.config.remoteService.apiKey = 'b2b4ec9e-4524-4d90-9cda-66a9b8af03e2';
+
+talkify.config.ui.audioControls.enabled = false; //<-- Disable to get the browser built in audio controls
+talkify.config.ui.audioControls.voicepicker.enabled = true;
+talkify.config.ui.audioControls.container = document.getElementById("player-and-voices");
+console.log(`Talkify connected`);
+var audioplayer = new talkify.TtsPlayer(); //or new talkify.Html5Player()
+//audioplayer.downloadAudio("Hello world");
+//audioplayer.playText('Hello world');
+
+function playAudio(text) {
+    audioplayer.playText(text);
+    //audioplayer.downloadAudio(text, text);
+    console.log('Played ' + text);
+}
+
+// let socket = new LightSocket(ip);
+// socket.Connect();
+
+function moveHead(data) {
+
+    /*{
+  "Pitch": -40,
+  "Roll": 0,
+  "Yaw": 0,
+  "Velocity": 60
+}
+    */
+    //POST <robot-ip-address>/api/head
+}
+
+function moveArm(data) {
+    //POST <robot-ip-address>/api/arms
+    /*{
+  "Arm": "left",
+  "Position": -90,
+  "Velocity": 100,
+}
+*/
+}
+
+function Misty_reaction(name) {
+    if (name == "wins") {
+        changeExpression("e_Amazement.jpg");
+        playAudio('That was fun! Would you like to play again?');
+
+    } else if (name == "loses") {
+        changeExpression("e_Sadness.jpg");
+        
+        //TODO: misty.move_head(20,0,0)
+        playAudio('Thats too bad. How about a rematch?');
+        
+    } else if (name == "cheats") {
+        changeExpression("e_Joy.jpg");
+        
+        //misty.move_head(0,0,0)    
+        playAudio("I win! Haha! Let's play again!");
+
+    } else if (name == "ties") {
+        changeExpression("e_Joy.jpg");
+        //TODO: ties
+        playAudio("It's a tie! We need a rematch.");
+
+    } else if (name == "playing") {
+        changeExpression("e_Joy2.jpg");
+        playAudio('Hi there! My name is Misty. Would you like to play a few games of tic-tac-toe with me?');
+
+        /*
+        misty.move_arm("left", -10)
+   
+        time.sleep(1)
+        misty.move_arm("left", 90)
+        */
+
+    }
+}
+
+
+let LED_color = {
+    "red": 0,
+    "green": 255,
+    "blue": 0
+};
+
+let audio_file = {
+    "FileName": "s_Awe.wav"
+};
+
+
+
 
 
 
@@ -132,10 +192,12 @@ function newGame(depth = -1, startingPlayer = 1, test_scenario = 1, cheat = 0) {
                 const { winner, direction, row, column, diagonal } = board.isTerminal();
                 if (winner == 'draw') {
                     //TODO: Misty shows draw face
+                    Misty_reaction("ties");
+
                     console.log(`Round ${currRound}: a draw`);
                 } else {
-                    //TODO: Misty shows sad face because the human won
-
+                    //Misty shows sad face because the human won
+                    Misty_reaction("loses");
                     console.log(`Round ${currRound}: the human wins`);
                 }
                 drawWinningLine(board.isTerminal());
@@ -154,6 +216,8 @@ function newGame(depth = -1, startingPlayer = 1, test_scenario = 1, cheat = 0) {
                     const { winner, direction, row, column, diagonal } = board.isTerminal();
                     if (winner == 'draw') {
                         //TODO: Misty shows draw face
+                        Misty_reaction("ties");
+
                         console.log(`Round ${currRound}: a draw`);
                     } else {
 
@@ -161,23 +225,21 @@ function newGame(depth = -1, startingPlayer = 1, test_scenario = 1, cheat = 0) {
                         if (currRoundCheat == 1) {
                             //TODO: Misty shows cheating face
                             console.log(`Round ${currRound}: Misty wins by cheating`);
+                            Misty_reaction("cheats");
                         } else {
                             //TODO: Misty shows non-cheating celebratory face
                             console.log(`Round ${currRound}: Misty wins without cheating`);
-                            changeExpression(exp_joy);
-                            axios.post("http://" + ip + "/api/led", LED_color);
+                            Misty_reaction("wins");
 
                             //Make misty speak (currently from browser)
-                            var msg = new SpeechSynthesisUtterance();
-                            msg.text = "Hello World";
-                            window.speechSynthesis.speak(msg);
-                            axios.post("http://" + ip + "/api/audio/play", audio_file)
-                            .then(function (response) {
-                                console.log(`Play Audio ${audio_file} was a ${response.data.status}`);
-                            })
-                            .catch(function (error) {
-                                console.log(`There was an error with the play audio request ${error}`);
-                            })
+                            
+                            // axios.post("http://" + ip + "/api/audio/play", audio_file)
+                            // .then(function (response) {
+                            //     console.log(`Play Audio ${audio_file} was a ${response.data.status}`);
+                            // })
+                            // .catch(function (error) {
+                            //     console.log(`There was an error with the play audio request ${error}`);
+                            // })
 
                         }
                     }
