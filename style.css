@@ -2,7 +2,7 @@
     box-sizing: border-box;
 }
 body {
-    background-color: #0a0710;
+    background-color: #000000;
 }
 .container {
     max-width: 500px;
@@ -13,7 +13,7 @@ body {
     margin-bottom: 20px;
 }
 .field label {
-    color: #fff;
+    color: #1f1f1f;
 }
 #board {
     width: 100%;
@@ -35,12 +35,12 @@ body {
     height: 33.3333333%;
     width: 33.3333333%;
     border: 2px solid #0a0710;
-    background: #130f1e;
+    background: #e0e0e0;
     position: relative;
     cursor: pointer;
-    color: #fff;
+    color: #292929;
     font-size: calc(18px + 5vw);
-    font-family: serif;
+    font-family: sanserif;
 }
 
 #board [class^="cell-"].x, #board [class^="cell-"].o {
