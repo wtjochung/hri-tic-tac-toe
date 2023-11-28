@@ -16,14 +16,14 @@ var currRound = 0;
 // sub-arrays are the scenarios, 1 = cheat, 0 = don't cheat
 var cheatPattern = [
     [0, 0, 0, 0, 0], 
-    [0, 0, 1, 0, 0],
-    [0, 1, 0, 1, 0]
+    [0, 1, 0, 0, 1],
+    [1, 1, 1, 1, 1]
     ];
 var wins = [0, 0, 0, 0, 0]
 
 let exp_joy = {
     "FileName": "e_Joy2.jpg",
-    //"Alpha": 1 //optional
+    "Alpha": 1 //optional
     //"Layer": null //default layer
     //"IsUrl": false //if true, script will treat filename as an online url
 };
@@ -90,28 +90,33 @@ function moveArm(data) {
 
 function Misty_reaction(name) {
     if (name == "wins") {
-        changeExpression("e_Amazement.jpg");
+        changeExpression({"FileName":"e_Amazement.jpg",
+        "Alpha": 1});
         playAudio('That was fun! Would you like to play again?');
 
     } else if (name == "loses") {
-        changeExpression("e_Sadness.jpg");
+        changeExpression({"FileName":"e_Sadness.jpg",
+        "Alpha": 1});
         
         //TODO: misty.move_head(20,0,0)
         playAudio('Thats too bad. How about a rematch?');
         
     } else if (name == "cheats") {
-        changeExpression("e_Joy.jpg");
+        changeExpression({"FileName":"e_Joy.jpg",
+        "Alpha": 1});
         
         //misty.move_head(0,0,0)    
         playAudio("I win! Haha! Let's play again!");
 
     } else if (name == "ties") {
-        changeExpression("e_Joy.jpg");
+        changeExpression({"FileName":"e_Joy.jpg",
+        "Alpha": 1});
         //TODO: ties
         playAudio("It's a tie! We need a rematch.");
 
     } else if (name == "playing") {
-        changeExpression("e_Joy2.jpg");
+        changeExpression({"FileName":"e_Joy2.jpg",
+        "Alpha": 1});
         playAudio('Hi there! My name is Misty. Would you like to play a few games of tic-tac-toe with me?');
 
         /*
@@ -262,6 +267,8 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log(`Starting game in initial configuration`);
     newGame(depth, startingPlayer, 1, 0);
     //}
+
+    playAudio('Hi there! My name is Misty. Thanks for participating! We will play five rounds of tic tac toe and then you will fill out a quick survey. Are you ready to play?');
         
     //Start a new game with chosen options when new game button is clicked
     document.getElementById("newGame").addEventListener('click', () => {
