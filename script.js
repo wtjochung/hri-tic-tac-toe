@@ -59,7 +59,7 @@ var audioplayer = new talkify.TtsPlayer(); //or new talkify.Html5Player()
 
 function playAudio(text) {
     audioplayer.playText(text);
-    //audioplayer.downloadAudio(text, text);
+    audioplayer.downloadAudio(text);
     console.log('Played ' + text);
 }
 
@@ -89,6 +89,14 @@ function moveArm(data) {
 }
 
 function Misty_reaction(name) {
+    var filename = audio/misty_audio_intro.mp3
+    var ENCODING = 'utf-8';
+    var encode_string = base64.b64encode(open(filename, "rb").read());
+    var base64_string = encode_string.decode(ENCODING);
+
+    save_audio_response = misty.SaveAudio(file_name, data=base64_string, overwriteExisting=True, immediatelyApply=True);
+    save_audio = JSON_response_to_dictionary(save_audio_response);
+    
     if (name == "wins") {
         changeExpression({"FileName":"e_Amazement.jpg",
         "Alpha": 1});
@@ -265,10 +273,10 @@ document.addEventListener("DOMContentLoaded", () => {
 	const startingPlayer = 1;
     //while (currRound <= totalNumRounds){
     console.log(`Starting game in initial configuration`);
+    Misty_reaction('playing');
     newGame(depth, startingPlayer, 1, 0);
     //}
 
-    playAudio('Hi there! My name is Misty. Thanks for participating! We will play five rounds of tic tac toe and then you will fill out a quick survey. Are you ready to play?');
         
     //Start a new game with chosen options when new game button is clicked
     document.getElementById("newGame").addEventListener('click', () => {
