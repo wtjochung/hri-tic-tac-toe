@@ -87,16 +87,29 @@ function moveArm(data) {
 }
 */
 }
+function upload_audio_file(filename){
+    var audio_base64_text = atob(filename);
+    var audio_file = {
+        "FileName": filename,
+        "Data": audio_base64_text,
+        "ImmediatelyApply": true,
+        "OverwriteExisting": true
+    }
+    //upload to Misty
+
+}
 
 function Misty_reaction(name) {
-    var filename = audio/misty_audio_intro.mp3
-    var ENCODING = 'utf-8';
-    var encode_string = base64.b64encode(open(filename, "rb").read());
-    var base64_string = encode_string.decode(ENCODING);
+    var filename = 'audio/base64/misty_audiobase64_intro.txt'
+    upload_audio_file(filename);
+    //var ENCODING = 'utf-8';
+    //var encode_string = base64.b64encode(open(filename, "rb").read());
+    //const encodedMp3 = btoa(mp3File);
+    //var base64_string = encode_string.decode(ENCODING);
 
     save_audio_response = misty.SaveAudio(file_name, data=base64_string, overwriteExisting=True, immediatelyApply=True);
     save_audio = JSON_response_to_dictionary(save_audio_response);
-    
+
     if (name == "wins") {
         changeExpression({"FileName":"e_Amazement.jpg",
         "Alpha": 1});
