@@ -92,14 +92,31 @@ function upload_audio_file(filename){
     var audio_file = {
         "FileName": filename,
         "Data": audio_base64_text,
-        "ImmediatelyApply": true,
+        "ImmediatelyApply": true, //whether Misty immediately plays the audio
         "OverwriteExisting": true
     }
     //upload to Misty
+    axios.post("http://" + ip + "/api/audio", audio_file)
+    .then(function (response) {
+        console.log(`Upload audio ${filename} was a ${response.data.status}`);
+    })
+    .catch(function (error) {
+        console.log(`There was an error uploading the audio ${error}`);
+    })
+
+    //play audio on Misty's storage
+    // axios.post("http://" + ip + "/api/audio/play", filename)
+    // .then(function (response) {
+    //     console.log(`Play audio ${filename} was a ${response.data.status}`);
+    // })
+    // .catch(function (error) {
+    //     console.log(`There was an error playing the audio ${error}`);
+    // })
 
 }
 
 function Misty_reaction(name) {
+    //TODO: convert other audio files to base64, call function
     var filename = 'audio/base64/misty_audiobase64_intro.txt'
     upload_audio_file(filename);
     //var ENCODING = 'utf-8';
